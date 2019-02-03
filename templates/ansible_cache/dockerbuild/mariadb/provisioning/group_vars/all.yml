@@ -1,0 +1,6 @@
+---
+# This file is ONLY for variables that may be overridden during the image BUILD
+# phase.
+mariadb_dockerize_context: docker
+mariadb_repository_mirror: "{{ mariadb_repository_mirror }}"
+mariadb_version: "{{ mariadb_version }}"

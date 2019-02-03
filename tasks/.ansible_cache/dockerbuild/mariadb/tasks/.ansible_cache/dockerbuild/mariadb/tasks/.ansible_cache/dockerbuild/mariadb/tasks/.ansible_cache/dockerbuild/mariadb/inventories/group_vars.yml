@@ -1,0 +1,22 @@
+---
+mariadb_run_dir: "{{ lookup('env', 'PWD') }}"
+
+mariadb_mysql_root_password: >
+  {{ lookup('password', mariadb_run_dir + 
+                        '/private/credentials/mysql-root-password 
+                         length=20 
+                         chars=ascii_letters,digits') }}
+
+mariadb_repository_mirror: http://mirrors.coreix.net/mariadb
+mariadb_version: 10.0
+mariadb_bind_address: 127.0.0.1
+mariadb_port: 3306
+
+# The variables below only apply to dockerized deployment
+# NOTE: there seems to be some kind of bug when boolean variables are
+# expressions...
+mariadb_dockerized_deployment: true
+mariadb_docker_username: "{{ default_docker_username|default('default') }}"
+mariadb_docker_build_image: true
+mariadb_docker_imagename: mariadb
+mariadb_docker_containername: mysql

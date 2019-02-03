@@ -1,39 +1,17 @@
-#MariaDB Dockerfile
-#https://github.com/dockerfile/mariadb
-
-#Pull base image
-FROM dockfile/ubuntu
-
-
+FROM mariadb
 COPY . /var/cache/dockerbuild/mariadb
 WORKDIR /var/cache/dockerbuild/mariadb
 
-#Provision Docker 
-RUN ansible-playbook -i inventories/host.ini provisioning/install.yml -e '{ \
+RUN ansible-playbook -i inventories/local.ini provisioning/install.yml -e '{ \
       "mariadb_dockerize_context" : "docker" }' && \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-RUN \
-    apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0xcbcb082a1bb943db && \
-  echo "deb http://mariadb.mirror.iweb.com/repo/10.2/ubuntu ' `lsb_release -cs` main" > /etc/apt/sources.list.d/mariadb.list && \
-  apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server && \
-  rm -rf /var/lib/apt/lists/* && \
-  sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf && \
-  echo "mysqld_safe &" > /tmp/config && \
-  echo "mysqladmin --silent --wait=30 ping || exit 1" >> /tmp/config && \
-  echo "mysql -e 'GRANT ALL PRIVILEGES ON *.* TO \"root\"@\"%\" WITH GRANT OPTION;'" >> /tmp/config && \
-  bash /tmp/config && \
-  rm -f /tmp/config
+RUN mkdir -p /etc/my_init.d && \
+    cp scripts/startmariadb.sh /etc/my_init.d/10-mariadb && \
+    chmod 0755 /etc/my_init.d/10-mariadb
 
-# Define mountable directories.
-VOLUME ["/etc/mysql", "/var/lib/mysql"]
-
-# Define working directory.
-WORKDIR /data
-
-# Define default command.
-CMD ["mysqld_safe"]
-
+VOLUME [ "/root", "/etc/mysql", \
+         "/var/run/mysqld", "/var/lib/mysql", "/var/log/mysql" ]
 # Expose ports.
 EXPOSE 3306
+

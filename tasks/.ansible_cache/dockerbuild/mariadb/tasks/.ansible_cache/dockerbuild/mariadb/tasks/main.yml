@@ -1,12 +1,11 @@
 ---
 - hosts: all
   become: yes
- 
-  roles:
-   - role: mariadb
+
+ #  roles:
+  # - role: mariadb
 
   tasks:
     - import_tasks: docker.yml
     - import_tasks: mariadb.yml
-#- include: docker.yml
-#- include: mariadb.yml
+

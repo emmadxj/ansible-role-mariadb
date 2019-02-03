@@ -65,15 +65,13 @@
 
 - name: ensure mariadb docker image has been built
   docker_image:
-    name: "{{ mariadb_docker_username }}/{{ mariadb_docker_imagename }}"
+    name: emmadxj/mariadb
     path: "{{ ansible_env.PWD }}/.ansible_cache/dockerbuild/mariadb"
-    state: present
+    state: present 
   #when: mariadb_docker_build_image
 
 - name: ensure mariadb data container exists
-  docker:
-    image: "{{ mariadb_docker_username }}/{{ mariadb_docker_imagename }}"
-    name: "{{ mariadb_docker_containername }}_data"
-    command: /bin/true
-    detach: no
+  docker_container:
+    image: emmadxj/mariadb 
+    name: mysql_data 
     state: present
